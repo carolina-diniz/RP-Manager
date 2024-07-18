@@ -25,6 +25,7 @@ export async function onGuildAvailable(guild: Guild, client: Client) {
         name: guild.name,
         guildId: guild.id,
         premium: false,
+        prefix: '[N]',
       });
       newGuild.save();
       logger.database.create(`Novo servidor adicionado: ${guild.name}, ID: ${guild.id}`);

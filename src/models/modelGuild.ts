@@ -15,10 +15,11 @@ const guildSchema: Schema<IModelGuild> = new Schema({
     type: Boolean,
     default: false,
   },
+  prefix: { type: String, required: true },
   aprovarsetChannelId: { type: String },
   pedirsetChannelId: { type: String },
   recrutamentoCategory: { type: String },
   entryRoleId: { type: String },
 });
 
-export const ModelGuild = mongoose.model("Guild", guildSchema)
+export const ModelGuild = mongoose.model("Guild", guildSchema);

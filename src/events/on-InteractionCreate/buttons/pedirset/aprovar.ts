@@ -188,11 +188,11 @@ async function setNickname(
   }
 
   // Set prefix Role
-  let prefixRole = "N";
-  if (interaction.guildId === "797857266660278292") prefixRole = "M";
+  const dbGuild = await ModelGuild.findOne({guildId: interaction.guildId!})
+  const prefixRole = dbGuild!.prefix
 
   try {
-    await target.setNickname(`[${prefixRole}] ${name} | ${gameId}`);
+    await target.setNickname(`${prefixRole} ${name} | ${gameId}`);
     return { nickname: target.nickname, recrutador};
   } catch (error) {
     const description = `O bot não possui permissão para alterar o NICKNAME do usuário!`;

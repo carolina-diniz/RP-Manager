@@ -66,7 +66,7 @@ async function missingPermissions(
 
 async function setNickname(interaction: ButtonInteraction, target: GuildMember, newEmbed: EmbedBuilder) {
   try {
-    await target.setNickname(`ENTRADA REJEITADA - ${interaction.user.tag}`);
+    await target.setNickname(`ENTRADA REJEITADA - ${target.user.tag}`);
   } catch (error) {
     const description = `O bot não possui permissão para alterar o NICKNAME do usuário!`
 

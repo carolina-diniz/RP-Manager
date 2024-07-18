@@ -57,7 +57,6 @@ const memberSchema: Schema<IMember> = new Schema({
     },
     permaDeathReason: {
       type: String,
-      required: true
     },
     whoBanned: {
       type: String || null,

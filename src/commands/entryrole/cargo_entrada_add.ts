@@ -6,9 +6,10 @@ import {
 } from "discord.js";
 import { ModelGuild } from "../../models/modelGuild";
 import { logger } from "../../util/logger";
+import { verifyPermissions } from "../../util/verifyPermissions";
 
 export const data = new SlashCommandBuilder()
-  .setName("entryroleadd")
+  .setName("cargo_entrada_add")
   .setDescription("Adiciona role para ser recebida ao aprovar set")
   .addRoleOption(
     new SlashCommandRoleOption()
@@ -19,6 +20,7 @@ export const data = new SlashCommandBuilder()
 
 export async function execute(interaction: CommandInteraction, client: Client) {
   try {
+    if(!await verifyPermissions(interaction, 'Administrator')) return;
     const dbGuild = await ModelGuild.findOne({ guildId: interaction.guildId });
     if (!dbGuild) {
       throw new Error('dbGuild or dbGuild.entryRoleId not found')

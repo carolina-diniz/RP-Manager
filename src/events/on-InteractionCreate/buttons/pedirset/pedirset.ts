@@ -77,8 +77,18 @@ async function isEntryRoleExist(interaction: ButtonInteraction) {
     const dbGuild = await ModelGuild.findOne({ guildId: interaction.guildId });
     if (!dbGuild) throw new Error("Guild not found in database");
 
-    const entryRole = await interaction.guild!.roles.fetch(`${dbGuild.entryRoleId}`);
-    if (!entryRole) {
+    let isValid = true;
+
+    if (dbGuild.entryRoleId) {
+      const listEntryRole = dbGuild.entryRoleId?.split('+')
+      listEntryRole.forEach(async (roleId) => {
+        const entryRole = await interaction.guild!.roles.fetch(roleId);
+        if(!entryRole) isValid = false;
+      })
+    }
+
+
+    if (!dbGuild.entryRoleId || !isValid) {
       await interaction.deferReply({ ephemeral: true });
       if (await verifyPermissions(interaction, "Administrator")) {
         await createEntryRoleModal(interaction);
@@ -87,7 +97,7 @@ async function isEntryRoleExist(interaction: ButtonInteraction) {
           guild: interaction.guild!,
           title: "🚫 Cargo de entrada não configurado!",
           description:
-            "O cargo de entrada não foi configurado no sistema, contate um administrador para configurá-lo.",
+            "O cargo de entrada não foi configurado corretamente no sistema, contate um administrador para configurá-lo.",
         });
 
         await interaction.editReply({
@@ -97,6 +107,8 @@ async function isEntryRoleExist(interaction: ButtonInteraction) {
       }
       return false;
     }
+
+
     return true;
   } catch (error) {
     logger.error(__filename, error);

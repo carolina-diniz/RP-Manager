@@ -36,16 +36,25 @@ export async function execute(interaction: ButtonInteraction) {
     }
 
     // Get entry role
-    const entryRoleId = dbGuild.entryRoleId;
-    const entryRole: Role | null = await interaction.guild!.roles.resolve(entryRoleId);
-    if (!entryRole) {
-      await roleNotFound(interaction, newEmbed);
-      return;
-    }
+    const entryRoleId: string[] = dbGuild.entryRoleId.split("+");
+    entryRoleId.forEach(async (roleId) => {
+      const entryRole: Role | null = await interaction.guild!.roles.resolve(roleId);
+      if (!entryRole) {
+        await roleNotFound(interaction, newEmbed);
+        return;
+      }
 
-    // Add Entry Role
-    const ADDENTRYROLE = await addEntryRole(interaction, target, entryRole, newEmbed);
-    if (!ADDENTRYROLE) return;
+      // Add Entry Role
+      const ADDENTRYROLE = await addEntryRole(interaction, target, entryRole, newEmbed);
+      if (!ADDENTRYROLE) return;
+
+      if (dbGuild.entryRoleRemove) {
+        const roleToRemoveId = dbGuild.entryRoleRemove.split('+')
+        roleToRemoveId.forEach(async (roleId) => {
+          await removeEntryRole(target, roleId)
+        })
+      }
+    });
 
     // get target name
     const embedInfos: (string | undefined)[] = embed.fields.map((data) => {
@@ -59,9 +68,13 @@ export async function execute(interaction: ButtonInteraction) {
         return data.value;
     });
 
-
     // Set nickname
-    const { nickname, recrutador } = await setNickname(interaction, target, newEmbed, embedInfos);
+    const { nickname, recrutador } = await setNickname(
+      interaction,
+      target,
+      newEmbed,
+      embedInfos
+    );
     if (!recrutador) return;
 
     // Success entry
@@ -173,9 +186,8 @@ async function setNickname(
   interaction: ButtonInteraction,
   target: GuildMember,
   newEmbed: EmbedBuilder,
-  embedInfos: (string | undefined)[],
+  embedInfos: (string | undefined)[]
 ) {
-
   let name: string = embedInfos[0] ?? "nome";
   const gameId: string = embedInfos[1] ?? "id";
   const recrutador: string = embedInfos[3] ?? "recrutador";
@@ -188,17 +200,17 @@ async function setNickname(
   }
 
   // Set prefix Role
-  const dbGuild = await ModelGuild.findOne({guildId: interaction.guildId!})
-  const prefixRole = dbGuild!.prefix
+  const dbGuild = await ModelGuild.findOne({ guildId: interaction.guildId! });
+  const prefixRole = dbGuild!.prefix;
 
   try {
     await target.setNickname(`${prefixRole} ${name} | ${gameId}`);
-    return { nickname: target.nickname, recrutador};
+    return { nickname: target.nickname, recrutador };
   } catch (error) {
     const description = `O bot não possui permissão para alterar o NICKNAME do usuário!`;
     await missingPermissions(interaction, newEmbed, description, "Yellow");
     logger.warn(`Can't change nickname of ${target.user.tag}`);
-    return { nickname: null, recrutador: null};
+    return { nickname: null, recrutador: null };
   }
 }
 
@@ -252,14 +264,13 @@ async function addNewMemberDocument(interaction: ButtonInteraction, member: Guil
       };
       dbMember.joinedAt = new Date();
       dbMember.leftAt = null;
-      dbMember.save()
+      dbMember.save();
 
       logger.database.update(
         `[${interaction.guild?.name}] Member infos updated to database <${
           member.nickname ?? member.user.username
         }>`
       );
-
     } else {
       const newDbMember = new ModelMember({
         id: member.id,
@@ -283,7 +294,7 @@ async function addNewMemberDocument(interaction: ButtonInteraction, member: Guil
         },
         joinedAt: new Date(),
         leftAt: null,
-      })
+      });
       newDbMember.save();
       logger.database.create(
         `[${interaction.guild?.name}] New member add to database <${
@@ -293,5 +304,18 @@ async function addNewMemberDocument(interaction: ButtonInteraction, member: Guil
     }
   } catch (error) {
     logger.database.error(__filename, error);
+  }
+}
+
+async function removeEntryRole(target: GuildMember, roleId: string) {
+  try {
+    const roleToRemove = await target.roles.resolve(roleId);
+    if (!roleToRemove) return;
+
+    await target.roles.remove(roleToRemove);
+
+    logger.updated("Role removed successfully");
+  } catch (error) {
+    logger.error(__filename, error);
   }
 }

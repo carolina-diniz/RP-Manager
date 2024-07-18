@@ -13,6 +13,7 @@ export async function verifyPermissions(
     }
 
     if (!staff.permissions.has(permission)) {
+      await interaction.deferReply({ephemeral: true})
       await interaction.editReply("Você não possui permissão para usar este comando!");
       logger.warn(`Deny Access! <${await getNickname({interaction})}> dont have permission to use this command.`);
       return false;

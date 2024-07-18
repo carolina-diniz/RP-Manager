@@ -7,4 +7,5 @@ export interface IModelGuild {
   aprovarsetChannelId?: string;
   recrutamentoCategory?: string;
   entryRoleId?: string;
+  entryRoleRemove?: string;
 }

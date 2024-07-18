@@ -17,6 +17,6 @@ export async function database() {
     .then(() => logger.database.info('connection to database established'))
 
   } catch (error) {
-    logger.database.error(__dirname, error)
+    logger.database.error(__filename, error)
   }
 }

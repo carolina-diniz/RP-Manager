@@ -8,4 +8,5 @@ export interface IModelGuild {
   recrutamentoCategory?: string;
   entryRoleId?: string;
   entryRoleRemove?: string;
+  salesReportChannelId?: string;
 }

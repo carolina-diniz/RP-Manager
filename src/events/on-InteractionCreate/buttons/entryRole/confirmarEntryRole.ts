@@ -20,7 +20,7 @@ export async function execute(interaction: ButtonInteraction) {
     const embed = await createEmbed({
       guild: interaction.guild!,
       title: "Cargo de Entrada Definido!",
-      description: `O cargo de entrada para este servidor foi definido com sucesso!`,
+      description: `O cargo de entrada para este servidor foi definido com sucesso!\nPara adicionar mais, use o comando \`cargo_entrada_add\`.`,
     });
 
     await interaction.update({

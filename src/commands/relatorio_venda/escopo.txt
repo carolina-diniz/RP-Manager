@@ -1,0 +1,6 @@
+será um comando de adm
+criará um canal
+esse canal será adicionado ao banco de dados
+criará um embed como resposta com o link para o novo canal
+criará uma mensagem no novo canal com todas as formas corretas de escrever os nomes das armas
+

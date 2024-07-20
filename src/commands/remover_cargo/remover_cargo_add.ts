@@ -4,35 +4,35 @@ import {
   SlashCommandBuilder,
   SlashCommandRoleOption,
 } from "discord.js";
+import { logger } from "../../events/on-InteractionCreate/onInteractionCreate";
 import { ModelGuild } from "../../models/modelGuild";
-import { logger } from "../../util/logger";
 import { verifyPermissions } from "../../util/verifyPermissions";
 
 export const data = new SlashCommandBuilder()
-  .setName("cargo_entrada_add")
-  .setDescription("Adiciona role para ser recebida ao aprovar set")
+  .setName("remover_cargo_add")
+  .setDescription("Adiciona um cargo a lista de cargos removidos ao aprovar set.")
   .addRoleOption(
     new SlashCommandRoleOption()
       .setName("cargo")
-      .setDescription("Adicionar cargo ao aprovar set")
+      .setDescription("Adicionar cargo para remover ao aprovar set")
       .setRequired(true)
   );
 
 export async function execute(interaction: CommandInteraction, client: Client) {
   try {
-    if(!await verifyPermissions(interaction, 'Administrator')) return;
+    if (!(await verifyPermissions(interaction, "Administrator"))) return;
     const dbGuild = await ModelGuild.findOne({ guildId: interaction.guildId });
     if (!dbGuild) {
-      throw new Error('dbGuild or dbGuild.entryRoleId not found')
+      throw new Error("dbGuild or dbGuild.entryRoleRemove not found");
     }
 
     const data = await interaction.options.get("cargo");
     const role = await data!.role;
 
-    if (!dbGuild.entryRoleId) {
-      dbGuild.entryRoleId = role!.id;
+    if (!dbGuild.entryRoleRemove) {
+      dbGuild.entryRoleRemove = role!.id;
     } else {
-      dbGuild.entryRoleId = `${dbGuild.entryRoleId}+${role!.id}`;
+      dbGuild.entryRoleRemove = `${dbGuild.entryRoleRemove}+${role!.id}`;
     }
 
     await dbGuild
@@ -42,23 +42,20 @@ export async function execute(interaction: CommandInteraction, client: Client) {
           content: "Cargo adicionado com sucesso!",
           ephemeral: true,
         });
-        logger.database.update("Novo cargo adicionado ao entry role");
+        logger.database.info("Novo cargo adicionado ao entry role", "guild");
       })
       .catch(async (err) => {
         await interaction.reply({
           content: "Error ao adicionar cargo",
           ephemeral: true,
         });
-        logger.database.error(
-          `${__filename} Error: Error ao tentar adicionar cargo a guild [${interaction.guild?.name}]`,
-          err
-        );
+        logger.database.error(`Error ao tentar adicionar cargo`, "guild", err);
       });
   } catch (error) {
     await interaction.reply({
       content: `${error}`,
       ephemeral: true,
-    })
-    logger.error(__filename, error);
+    });
+    logger.command.error("", error);
   }
 }

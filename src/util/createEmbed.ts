@@ -19,11 +19,11 @@ export async function createEmbed(
   try {
     if (!data.guild) return;
 
-    const MGuild = await ModelGuild.findOne({ guildId: data.guild.id }).catch((error) => {
+    const dbGuild = await ModelGuild.findOne({ guildId: data.guild.id }).catch((error) => {
       logger.error(__filename, error);
       return null;
     });
-    if (!MGuild) return null;
+    if (!dbGuild) return null;
 
     // create embed with given parameters and return it
     const embed = new EmbedBuilder();
@@ -33,7 +33,7 @@ export async function createEmbed(
     setFooter(embed, data.guild, data.footer);
     setTimestamp(embed, data.timestamp);
     setThumbnail(embed, data.thumbnail, data.guild);
-    setColor(embed, data.color, MGuild);
+    setColor(embed, data.color, dbGuild);
 
     return embed;
   } catch (error) {
@@ -60,7 +60,7 @@ function setFooter(
 ) {
   return embed.setFooter(
     typeof footer === "boolean" && footer
-      ? { text: `${guild.name}` }
+      ? { text: `${guild.name}`,iconURL: guild.iconURL() ?? undefined }
       : typeof footer === "object"
       ? footer
       : null
@@ -93,10 +93,10 @@ function setThumbnail(
   );
 }
 
-function setColor(embed: EmbedBuilder, color: string | null | undefined, MGuild: any) {
+function setColor(embed: EmbedBuilder, color: string | null | undefined, dbGuild: any) {
   embed.setColor(
     typeof color === "string" && color
       ? parseInt(color, 16)
-      : parseInt(MGuild.embedColor || "000000", 16)
+      : parseInt(dbGuild.embedColor || "000000", 16)
   );
 }

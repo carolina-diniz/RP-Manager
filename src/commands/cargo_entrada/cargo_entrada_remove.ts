@@ -4,13 +4,13 @@ import {
   SlashCommandBuilder,
   SlashCommandRoleOption,
 } from "discord.js";
+import { logger } from "../../events/on-InteractionCreate/onInteractionCreate";
 import { ModelGuild } from "../../models/modelGuild";
-import { logger } from "../../util/logger";
 import { verifyPermissions } from "../../util/verifyPermissions";
 
 export const data = new SlashCommandBuilder()
   .setName("cargo_entrada_remove")
-  .setDescription("Remove role recebida ao aprovar set")
+  .setDescription("Remove um cargo da lista de cargos adicionados ao aprovar set.")
   .addRoleOption(
     new SlashCommandRoleOption()
       .setName("cargo")
@@ -20,10 +20,10 @@ export const data = new SlashCommandBuilder()
 
 export async function execute(interaction: CommandInteraction, client: Client) {
   try {
-    if(!await verifyPermissions(interaction, 'Administrator')) return;
+    if (!(await verifyPermissions(interaction, "Administrator"))) return;
     const dbGuild = await ModelGuild.findOne({ guildId: interaction.guildId });
     if (!dbGuild || !dbGuild.entryRoleId) {
-      throw new Error('dbGuild or dbGuild.entryRoleId not found')
+      throw new Error("dbGuild or dbGuild.entryRoleId not found");
     }
 
     const data = await interaction.options.get("cargo");
@@ -47,23 +47,20 @@ export async function execute(interaction: CommandInteraction, client: Client) {
           content: "Cargo removido com sucesso!",
           ephemeral: true,
         });
-        logger.database.update("Cargo entryRole removido com sucesso!");
+        logger.database.info("Cargo entryRole removido com sucesso!", "guild");
       })
       .catch(async (err) => {
         await interaction.reply({
           content: "Error ao adicionar cargo",
           ephemeral: true,
         });
-        logger.database.error(
-          `${__filename} Error: Error ao tentar adicionar cargo a guild [${interaction.guild?.name}]`,
-          err
-        );
+        logger.database.error(`Error ao tentar adicionar cargo`, "guild", err);
       });
   } catch (error) {
     await interaction.reply({
       content: `${error}`,
       ephemeral: true,
-    })
-    logger.error(__filename, error);
+    });
+    logger.command.error('', error);
   }
 }

@@ -1,6 +1,6 @@
 import { CommandInteraction, SlashCommandBuilder } from "discord.js";
+import { logger } from "../../events/on-InteractionCreate/onInteractionCreate";
 import { createEmbed } from "../../util/createEmbed";
-import { logger } from "../../util/logger";
 
 export const data = new SlashCommandBuilder()
   .setName("help")
@@ -13,6 +13,10 @@ export async function execute(interaction: CommandInteraction) {
 **Comandos:**
 - **/status**: Mostra a quanto tempo o bot está online.
 - **/pedirset**: Cria um canal para pedir sets de forma organizada.
+- **/cargo_entrada_add**: Adiciona um cargo a lista de cargos **adicionados** ao aprovar set.
+- **/cargo_entrada_remove**: Remove um cargo da lista de cargos **adicionados** ao aprovar set.
+- **/remover_cargo_add**: Adiciona um cargo a lista de cargos **removidos** ao aprovar set.
+- **/remover_cargo_remove**: Remove um cargo da lista de cargos **removidos** ao aprovar set.
 - **/help**: Lista todos os comandos do RP Manager.
     `;
 
@@ -29,6 +33,6 @@ export async function execute(interaction: CommandInteraction) {
       ephemeral: true,
     });
   } catch (error) {
-    logger.error(__filename, error);
+    logger.command.error("", error);
   }
 }

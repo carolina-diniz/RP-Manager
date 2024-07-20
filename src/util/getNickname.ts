@@ -1,8 +1,8 @@
-import { CommandInteraction, Interaction } from "discord.js";
+import { ButtonInteraction, CommandInteraction, Interaction } from "discord.js";
 import { logger } from "./logger";
 
 interface IMember {
-  interaction: Interaction| CommandInteraction;
+  interaction: Interaction | CommandInteraction | ButtonInteraction ;
   memberId?: string | null
 }
 

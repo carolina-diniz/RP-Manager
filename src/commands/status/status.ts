@@ -1,6 +1,6 @@
 import { Client, CommandInteraction, SlashCommandBuilder } from "discord.js";
+import { logger } from "../../events/on-InteractionCreate/onInteractionCreate";
 import { createEmbed } from "../../util/createEmbed";
-import { logger } from "../../util/logger";
 
 export const data: SlashCommandBuilder = new SlashCommandBuilder()
   .setName("status")
@@ -24,6 +24,6 @@ export async function execute(interaction: CommandInteraction, client: Client) {
 
     interaction.reply({ embeds: [embed], ephemeral: true });
   } catch (error) {
-    logger.error(__filename, error);
+    logger.command.error("Erro ao executar o comando status", error);
   }
 }

@@ -80,6 +80,7 @@ Seu pedido será avaliado por um moderador e seu acesso será liberado em breve.
 Mensagem deletada <t:${Math.floor((Date.now() + timeout) / 1000)}:R>.`,
     footer: true,
     guild: interaction.guild!,
+    thumbnail: true,
   });
   if (!embed) return;
 

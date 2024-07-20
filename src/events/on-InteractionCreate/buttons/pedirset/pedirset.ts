@@ -8,14 +8,17 @@ import {
   TextInputBuilder,
   TextInputStyle,
 } from "discord.js";
-import { ModelGuild } from "../../../../models/modelGuild";
 import { createEmbed } from "../../../../util/createEmbed";
-import { logger } from "../../../../util/logger";
+import { getDbGuild } from "../../../../util/getDbGuild";
 import { verifyPermissions } from "../../../../util/verifyPermissions";
+import { logger } from "../../onInteractionCreate";
 
 export async function execute(interaction: ButtonInteraction, client: Client) {
+  await logger.setPath(__filename)
+
   try {
-    if (!(await isEntryRoleExist(interaction))) return;
+    const entryRole = await isEntryRoleExist(interaction);
+    if (!entryRole) return;
 
     const guild: Guild | null = interaction.guild;
 
@@ -66,38 +69,38 @@ export async function execute(interaction: ButtonInteraction, client: Client) {
 
     modal.addComponents(row1, row2, row3, row4);
     await interaction.showModal(modal).catch((err) => console.error(err));
-    logger.normal(`Modal pedir set criado para <@${interaction.user.id}>`);
+    logger.button.info(`Modal pedir set criado`);
   } catch (error) {
-    logger.error(__filename, error);
+    logger.button.error("error ao criar modal", error);
   }
 }
 
 async function isEntryRoleExist(interaction: ButtonInteraction) {
   try {
-    const dbGuild = await ModelGuild.findOne({ guildId: interaction.guildId });
-    if (!dbGuild) throw new Error("Guild not found in database");
-
     let isValid = true;
 
-    if (dbGuild.entryRoleId) {
-      const listEntryRole = dbGuild.entryRoleId?.split('+')
-      listEntryRole.forEach(async (roleId) => {
-        const entryRole = await interaction.guild!.roles.fetch(roleId);
-        if(!entryRole) isValid = false;
-      })
-    }
+    const dbGuild = await getDbGuild(interaction);
+    if (!dbGuild) throw new Error("Guild not found in database");
 
+    if (dbGuild.entryRoleId) {
+      const listEntryRole = dbGuild.entryRoleId?.split("+");
+      listEntryRole.forEach(async (roleId) => {
+        if (!(await interaction.guild!.roles.fetch(roleId))) isValid = false;
+      });
+    }
 
     if (!dbGuild.entryRoleId || !isValid) {
       await interaction.deferReply({ ephemeral: true });
       if (await verifyPermissions(interaction, "Administrator")) {
-        await createEntryRoleModal(interaction);
+        await createEntryRoleMenu(interaction);
       } else {
         const embed = await createEmbed({
           guild: interaction.guild!,
           title: "🚫 Cargo de entrada não configurado!",
           description:
             "O cargo de entrada não foi configurado corretamente no sistema, contate um administrador para configurá-lo.",
+          timestamp: true,
+          footer: true,
         });
 
         await interaction.editReply({
@@ -108,16 +111,39 @@ async function isEntryRoleExist(interaction: ButtonInteraction) {
       return false;
     }
 
-
     return true;
   } catch (error) {
-    logger.error(__filename, error);
+    logger.button.error("Error ao verificar se entryRoleId existe", error);
   }
 }
 
-async function createEntryRoleModal(interaction: ButtonInteraction) {
+async function createEntryRoleMenu(interaction: ButtonInteraction) {
   try {
     const roles = await interaction.guild!.roles.fetch();
+
+    if (
+      roles.map((role) => ({
+        label: role.name,
+        value: role.id,
+      })).length > 25
+    ) {
+      const embed = await createEmbed({
+        guild: interaction.guild!,
+        title: "Configuração: Cargo de entrada",
+        description:
+          "Você possui mais de 25 cargos, por favor, configure os cargos de entrada no sistema usando o comando `cargo_entrada_add`.",
+        timestamp: true,
+        thumbnail: true,
+        footer: true,
+      });
+
+      await interaction.editReply({
+        embeds: [embed!],
+      });
+
+      return null;
+    }
+
     const selectMenu = new StringSelectMenuBuilder()
       .setCustomId("entryRoleMenu")
       .setPlaceholder("Selecione um cargo")
@@ -145,6 +171,6 @@ async function createEntryRoleModal(interaction: ButtonInteraction) {
       await interaction.deleteReply();
     }, 30 * 1000);
   } catch (error) {
-    logger.error(__filename, error);
+    logger.button.error("Erro ao criar menu de seleção", error);
   }
 }

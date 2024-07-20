@@ -1,24 +1,12 @@
 import {
-  Client,
-  CommandInteraction,
-  SlashCommandBuilder,
-  SlashCommandRoleOption,
+  CommandInteraction
 } from "discord.js";
-import { logger } from "../../events/on-InteractionCreate/onInteractionCreate";
-import { ModelGuild } from "../../models/modelGuild";
-import { verifyPermissions } from "../../util/verifyPermissions";
+import { logger } from "../../../events/on-InteractionCreate/onInteractionCreate";
+import { ModelGuild } from "../../../models/modelGuild";
+import { verifyPermissions } from "../../../util/verifyPermissions";
 
-export const data = new SlashCommandBuilder()
-  .setName("cargo_entrada_remove")
-  .setDescription("Remove um cargo da lista de cargos adicionados ao aprovar set.")
-  .addRoleOption(
-    new SlashCommandRoleOption()
-      .setName("cargo")
-      .setDescription("remove cargo ao aprovar set")
-      .setRequired(true)
-  );
 
-export async function execute(interaction: CommandInteraction, client: Client) {
+export async function entradaDel(interaction: CommandInteraction) {
   try {
     if (!(await verifyPermissions(interaction, "Administrator"))) return;
     const dbGuild = await ModelGuild.findOne({ guildId: interaction.guildId });
@@ -37,8 +25,6 @@ export async function execute(interaction: CommandInteraction, client: Client) {
         dbGuild.entryRoleId = listaRoles.join("+");
       }
     });
-
-    console.log(dbGuild.entryRoleId);
 
     await dbGuild
       .save()

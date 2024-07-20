@@ -8,24 +8,25 @@ export const data = new SlashCommandBuilder()
 
 export async function execute(interaction: CommandInteraction) {
   try {
-    const title = "Lista de comandos";
     const description = `
-**Comandos:**
+# Lista de comandos:
+### Geral:
 - **/status**: Mostra a quanto tempo o bot está online.
-- **/pedirset**: Cria um canal para pedir sets de forma organizada.
-- **/cargo_entrada_add**: Adiciona um cargo a lista de cargos **adicionados** ao aprovar set.
-- **/cargo_entrada_remove**: Remove um cargo da lista de cargos **adicionados** ao aprovar set.
-- **/remover_cargo_add**: Adiciona um cargo a lista de cargos **removidos** ao aprovar set.
-- **/remover_cargo_remove**: Remove um cargo da lista de cargos **removidos** ao aprovar set.
 - **/help**: Lista todos os comandos do RP Manager.
+### Set:
+- **/pedirset criar**: Cria um canal para pedir sets de forma automatizada.
+- **/pedirset entrada add**: Adiciona um cargo a lista de cargos **adicionados** ao aprovar set.
+- **/pedirset entrada del**: Remove um cargo da lista de cargos **adicionados** ao aprovar set.
+- **/pedirset remover add**: Adiciona um cargo a lista de cargos **removidos** ao aprovar set.
+- **/pedirset remover del**: Remove um cargo da lista de cargos **removidos** ao aprovar set.
     `;
 
     const embed = await createEmbed({
       guild: interaction.guild!,
-      title,
       description,
       footer: true,
       thumbnail: true,
+      timestamp: true
     });
 
     interaction.reply({

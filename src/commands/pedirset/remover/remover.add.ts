@@ -1,38 +1,26 @@
 import {
-  Client,
-  CommandInteraction,
-  SlashCommandBuilder,
-  SlashCommandRoleOption,
+  CommandInteraction
 } from "discord.js";
-import { logger } from "../../events/on-InteractionCreate/onInteractionCreate";
-import { ModelGuild } from "../../models/modelGuild";
-import { verifyPermissions } from "../../util/verifyPermissions";
+import { logger } from "../../../events/on-InteractionCreate/onInteractionCreate";
+import { ModelGuild } from "../../../models/modelGuild";
+import { verifyPermissions } from "../../../util/verifyPermissions";
 
-export const data = new SlashCommandBuilder()
-  .setName("cargo_entrada_add")
-  .setDescription("Adiciona um cargo a lista de cargos adicionados ao aprovar set")
-  .addRoleOption(
-    new SlashCommandRoleOption()
-      .setName("cargo")
-      .setDescription("Adicionar cargo ao aprovar set")
-      .setRequired(true)
-  );
 
-export async function execute(interaction: CommandInteraction, client: Client) {
+export async function removerAdd(interaction: CommandInteraction) {
   try {
     if (!(await verifyPermissions(interaction, "Administrator"))) return;
     const dbGuild = await ModelGuild.findOne({ guildId: interaction.guildId });
     if (!dbGuild) {
-      throw new Error("dbGuild or dbGuild.entryRoleId not found");
+      throw new Error("dbGuild or dbGuild.entryRoleRemove not found");
     }
 
     const data = await interaction.options.get("cargo");
     const role = await data!.role;
 
-    if (!dbGuild.entryRoleId) {
-      dbGuild.entryRoleId = role!.id;
+    if (!dbGuild.entryRoleRemove) {
+      dbGuild.entryRoleRemove = role!.id;
     } else {
-      dbGuild.entryRoleId = `${dbGuild.entryRoleId}+${role!.id}`;
+      dbGuild.entryRoleRemove = `${dbGuild.entryRoleRemove}+${role!.id}`;
     }
 
     await dbGuild
@@ -56,6 +44,6 @@ export async function execute(interaction: CommandInteraction, client: Client) {
       content: `${error}`,
       ephemeral: true,
     });
-    logger.command.error('', error);
+    logger.command.error("", error);
   }
 }

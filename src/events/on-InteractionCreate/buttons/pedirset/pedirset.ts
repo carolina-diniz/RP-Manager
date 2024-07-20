@@ -131,7 +131,7 @@ async function createEntryRoleMenu(interaction: ButtonInteraction) {
         guild: interaction.guild!,
         title: "Configuração: Cargo de entrada",
         description:
-          "Você possui mais de 25 cargos, por favor, configure os cargos de entrada no sistema usando o comando `cargo_entrada_add`.",
+          "Você possui mais de 25 cargos, por favor, configure os cargos de entrada no sistema usando o comando `/pedirset entrada add`.",
         timestamp: true,
         thumbnail: true,
         footer: true,

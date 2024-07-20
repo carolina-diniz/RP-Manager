@@ -1,18 +1,14 @@
-import { CommandInteraction, SlashCommandBuilder } from "discord.js";
+import { CommandInteraction } from "discord.js";
 import { Document, Types } from "mongoose";
-import { logger } from "../../events/on-InteractionCreate/onInteractionCreate";
-import { IModelGuild } from "../../interfaces/modelGuild";
-import { createChannel } from "../../util/createChannel";
-import { createEmbed } from "../../util/createEmbed";
-import { getDbGuild } from "../../util/getDbGuild";
-import { verifyPermissions } from "../../util/verifyPermissions";
-import { verifyPremiumAccess } from "../../util/verifyPremiumAccess";
+import { logger } from "../../../../events/on-InteractionCreate/onInteractionCreate";
+import { IModelGuild } from "../../../../interfaces/modelGuild";
+import { createChannel } from "../../../../util/createChannel";
+import { createEmbed } from "../../../../util/createEmbed";
+import { getDbGuild } from "../../../../util/getDbGuild";
+import { verifyPermissions } from "../../../../util/verifyPermissions";
+import { verifyPremiumAccess } from "../../../../util/verifyPremiumAccess";
 
-export const data = new SlashCommandBuilder()
-  .setName("relatorio_venda")
-  .setDescription("mudar depois");
-
-export async function execute(interaction: CommandInteraction) {
+export async function criarVenda(interaction: CommandInteraction) {
   logger.setPath(__filename);
   try {
     await interaction.deferReply({ ephemeral: true });

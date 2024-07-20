@@ -1,24 +1,9 @@
-import {
-  Client,
-  CommandInteraction,
-  SlashCommandBuilder,
-  SlashCommandRoleOption,
-} from "discord.js";
-import { logger } from "../../events/on-InteractionCreate/onInteractionCreate";
-import { ModelGuild } from "../../models/modelGuild";
-import { verifyPermissions } from "../../util/verifyPermissions";
+import { CommandInteraction } from "discord.js";
+import { logger } from "../../../events/on-InteractionCreate/onInteractionCreate";
+import { ModelGuild } from "../../../models/modelGuild";
+import { verifyPermissions } from "../../../util/verifyPermissions";
 
-export const data = new SlashCommandBuilder()
-  .setName("remover_cargo_remove")
-  .setDescription("Remove um cargo da lista de cargos removidos ao aprovar set.")
-  .addRoleOption(
-    new SlashCommandRoleOption()
-      .setName("cargo")
-      .setDescription("Remove cargo ao aprovar set")
-      .setRequired(true)
-  );
-
-export async function execute(interaction: CommandInteraction, client: Client) {
+export async function removerDel(interaction: CommandInteraction) {
   try {
     if (!(await verifyPermissions(interaction, "Administrator"))) return;
     const dbGuild = await ModelGuild.findOne({ guildId: interaction.guildId });

@@ -16,6 +16,7 @@ const guildSchema: Schema<IModelGuild> = new Schema({
     default: false,
   },
   prefix: { type: String, required: true },
+  embedColor: { type: String },
   aprovarsetChannelId: { type: String },
   pedirsetChannelId: { type: String },
   recrutamentoCategory: { type: String },

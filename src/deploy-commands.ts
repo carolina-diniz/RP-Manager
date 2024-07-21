@@ -1,4 +1,4 @@
-import { REST, Routes, SlashCommandBuilder, SlashCommandOptionsOnlyBuilder } from "discord.js";
+import { REST, Routes } from "discord.js";
 import dotenv from "dotenv";
 import { commands } from "./commands/commands";
 import { IDeployConfig } from "./interfaces/deployConfig";
@@ -9,7 +9,7 @@ dotenv.config();
 const TOKEN: string | undefined = process.env.TOKEN;
 if (!TOKEN) logger.error(__dirname, 'TOKEN Not Found')
 const rest: REST = new REST({ version: "10" }).setToken(TOKEN!);
-const commandsData: (SlashCommandBuilder | SlashCommandOptionsOnlyBuilder)[] =
+const commandsData =
   Object.values(commands).map((command) => command.data);
 
 export async function deployCommands(deployConfig: IDeployConfig) {

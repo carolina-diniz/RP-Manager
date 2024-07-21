@@ -5,22 +5,10 @@ import { IModelGuild } from "../../../../interfaces/modelGuild";
 import { createChannel } from "../../../../util/createChannel";
 import { createEmbed } from "../../../../util/createEmbed";
 import { getDbGuild } from "../../../../util/getDbGuild";
-import { verifyPermissions } from "../../../../util/verifyPermissions";
-import { verifyPremiumAccess } from "../../../../util/verifyPremiumAccess";
 
 export async function criarVenda(interaction: CommandInteraction) {
   logger.setPath(__filename);
   try {
-    await interaction.deferReply({ ephemeral: true });
-
-    // Verifica se o usuário possui permissão para usar este comando
-    const isAdmin = await verifyPermissions(interaction, "Administrator");
-    if (!isAdmin) throw new Error("Usuário não possui permissão para usar este comando!");
-
-    // Verifica se o servidor possui premium
-    const isPremium = await verifyPremiumAccess(interaction);
-    if (!isPremium) throw new Error("Este servidor não possui premium!");
-
     const dbGuild = await getDbGuild(interaction);
     if (!dbGuild) throw new Error("Guild não encontrada no banco de dados");
 
@@ -50,7 +38,7 @@ export async function criarVenda(interaction: CommandInteraction) {
   }
 }
 
-async function createSalesReportChannel(
+export async function createSalesReportChannel(
   interaction: CommandInteraction,
   dbGuild: Document<unknown, {}, IModelGuild> & IModelGuild & { _id: Types.ObjectId }
 ) {

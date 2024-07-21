@@ -10,4 +10,5 @@ export interface IModelGuild {
   entryRoleId?: string;
   entryRoleRemove?: string;
   salesReportChannelId?: string;
+  salesRoles?: { id: string; percent: number }[];
 }

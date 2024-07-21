@@ -78,6 +78,29 @@ export class Logger {
       console.log('___________________________________________________')
     }
   };
+  message = {
+    info: (message: string) => {
+      console.log(
+        `${getDate().string} [${this.guildName}] [message] [info] <${
+          this.userName
+        }>: ${message}`
+      );
+    },
+    warn: (message: string) => {
+      console.log(
+        `${getDate().string} [${this.guildName}] [message] [warn] <${
+          this.userName
+        }>: ${message}`
+      );
+    },
+    error: (message: string, error: any) => {
+      console.log('_______________________ERROR_______________________')
+      console.log(`${getDate().string} [${this.guildName}] [message] [error] <${this.userName}>: ${message}`)
+      console.log(`Error Path: ${this.path}`)
+      console.log(error)
+      console.log('___________________________________________________')
+    }
+  };
   system = {
     info: (message: string) => {
       console.log(

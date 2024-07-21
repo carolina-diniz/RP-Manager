@@ -23,6 +23,9 @@ const guildSchema: Schema<IModelGuild> = new Schema({
   entryRoleId: { type: String },
   entryRoleRemove: { type: String },
   salesReportChannelId: { type: String },
+  salesRoles: {
+    type: [{ id: String, percent: Number }],
+  },
 });
 
 export const ModelGuild = mongoose.model("Guild", guildSchema);

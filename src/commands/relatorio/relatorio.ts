@@ -1,4 +1,4 @@
-import { CommandInteraction, SlashCommandBuilder, SlashCommandSubcommandBuilder, SlashCommandSubcommandGroupBuilder } from "discord.js";
+import { CommandInteraction, SlashCommandBuilder, SlashCommandIntegerOption, SlashCommandRoleOption, SlashCommandSubcommandBuilder, SlashCommandSubcommandGroupBuilder } from "discord.js";
 import { logger } from "../../events/on-InteractionCreate/onInteractionCreate";
 import { verifyPermissions } from "../../util/verifyPermissions";
 import { verifyPremiumAccess } from "../../util/verifyPremiumAccess";
@@ -15,6 +15,25 @@ export const data = new SlashCommandBuilder()
     new SlashCommandSubcommandBuilder()
     .setName('criar')
     .setDescription('cria canal')
+  )
+  .addSubcommand(
+    new SlashCommandSubcommandBuilder()
+    .setName('config')
+    .setDescription('cria canal')
+    .addRoleOption(
+      new SlashCommandRoleOption()
+       .setName('cargo')
+       .setDescription('Cargo mudar as porcentagens')
+       .setRequired(true)
+    )
+    .addIntegerOption(
+      new SlashCommandIntegerOption()
+      .setName('porcentagem')
+      .setDescription('uma porcentagem')
+      .setRequired(true)
+      .setMinValue(0)
+      .setMaxValue(100)
+    )
   )
 )
 
@@ -37,7 +56,6 @@ export async function execute(interaction: CommandInteraction) {
       // Porcentagem
     }
   } catch (error) {
-    logger.command.error('', error)
+    logger.command.error('Error ao executar relatorio', error)
   }
-  console.log()
 }

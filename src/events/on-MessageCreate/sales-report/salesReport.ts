@@ -20,15 +20,16 @@ export async function salesReport(message: Message) {
 
     const dbGuild = await ModelGuild.findOne({ guildId: message.guildId });
 
-    if (!dbGuild || !dbGuild.salesReportChannelId || !isContentValid(message.content))
-      return;
+    if (!dbGuild || !isContentValid(message.content)) return;
 
     const member = await message.member;
     if (!member) return;
 
     // get percentage of sales
-    const percentComission = getPercentComission(member, dbGuild);
-    if (!percentComission) return;
+    let percentComission = getPercentComission(member, dbGuild);
+    if (!percentComission) {
+      percentComission = 0;
+    }
 
     // monta o embed com as informações do membro
     const embed = await createEmbed({

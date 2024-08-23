@@ -1,76 +1,17 @@
-import mongoose, { Schema } from "mongoose";
-import { IMember } from "../interfaces/modelMember";
+import { model, Schema } from "mongoose";
+import { IModelMember } from "../interfaces/modelMember";
 
-const memberSchema: Schema<IMember> = new Schema({
-  id: {
-    type: String,
-    unique: true,
-    required: true
-  },
-  IGName: {
-    type: String || null,
-  },
-  IGId: {
-    type: String || null,
-  },
-  nickname: {
-    type: String || null,
-  },
-  guildId: {
-    type: String,
-    required: true
-  },
-  user: {
-    globalName: {
-      type: String || null,
-    },
-    createdTimestamp: {
-      type: Number,
-      required: true
-    },
-    tag: {
-      type: String,
-      required: true
-    },
-    bot: {
-      type: Boolean,
-      required: true
-    },
-    displayName: {
-      type: String,
-      required: true
-    },
-    id: {
-      type: String,
-      unique: true,
-      required: true
-    },
-    username: {
-      type: String,
-      required: true
-    },
-  },
-  pd: {
-    isPemaBanned: {
-      type: Boolean,
-      required: true
-    },
-    permaDeathReason: {
-      type: String,
-    },
-    whoBanned: {
-      type: String || null,
-    },
-  },
-  joinedAt: {
-    type: Date,
-    required: true
-  },
-  leftAt: {
-    type: Date
-  },
+const memberSchema: Schema<IModelMember> = new Schema({
+  guildId: { type: String, required: true },
+  memberId: { type: String, required: true },
+  nickname: { type: String, required: true },
+  nameIG: { type: String, required: true },
+  idIG: { type: String, required: true },
+  isOnDiscord: { type: Boolean, required: true, default: false },
+  alreadyBanned: { type: Boolean, required: true },
+  allowedBy: { type: String, required: true},
+  recruiterId: { type: String, required: true },
+  createdAt: { type: Date, required: true}
 });
 
-export const ModelMember = mongoose.model('Member', memberSchema)
-
-//35966
+export const ModelMember = model('Member', memberSchema)

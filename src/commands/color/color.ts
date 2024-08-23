@@ -3,18 +3,21 @@ import {
   SlashCommandBuilder,
   SlashCommandStringOption,
 } from "discord.js";
-import { logger } from "../../events/on-InteractionCreate/onInteractionCreate";
-import { getDbGuild } from "../../util/getDbGuild";
-import { verifyPermissions } from "../../util/verifyPermissions";
-import { verifyPremiumAccess } from "../../util/verifyPremiumAccess";
+import { logger } from "../..";
+import { createEmbed } from "../../utils/createEmbed";
+import { getGuild } from "../../utils/getGuild";
+import { verifyPermission } from "../../utils/verifyPermission";
+import { verifyPremiumAccess } from "../../utils/verifyPremiumAccess";
 
 export const data = new SlashCommandBuilder()
   .setName("color")
-  .setDescription("cor das embeds")
+  .setDescription("O comando permite definir a cor das embeds do servidor.")
   .addStringOption(
     new SlashCommandStringOption()
-      .setName("hex")
-      .setDescription("cor das embeds em hexadecimal")
+      .setName("hexadecimal")
+      .setDescription(
+        "Você pode usar qualquer cor hexadecimal válida (ex: #FF0000 para vermelho)"
+      )
       .setMaxLength(6)
       .setMinLength(6)
       .setRequired(true)
@@ -22,35 +25,46 @@ export const data = new SlashCommandBuilder()
 
 export async function execute(interaction: CommandInteraction) {
   try {
-    const isAdmin = await verifyPermissions(interaction, 'Administrator')
-    if (!isAdmin) throw new Error('Usuário não possui permissão para usar este comando!')
+    await interaction.deferReply({ ephemeral: true });
+    if (
+      !(await verifyPremiumAccess(interaction)) ||
+      !(await verifyPermission(interaction, "Administrator"))
+    )
+      return;
 
-    const isPremium = await verifyPremiumAccess(interaction)
-    if (!isPremium) throw new Error('Este servidor não possui premium!')
+    const valor = await interaction.options
+      .get("hexadecimal")
+      ?.value?.toLocaleString()
+      .toUpperCase();
 
-    const valor = await interaction.options.get("hex")?.value?.toLocaleString();
     if (!valor || !/[0-9A-F]{6}$/i.test(valor)) {
-      interaction.reply({
+      interaction.editReply({
         content: "A cor deve ser um hexadecimal válido (ex: FF0000)",
-        ephemeral: true,
       });
-      throw new Error("Valor inválido");
+      throw new Error("Color valor invalid");
     }
 
-    const dbGuild = await getDbGuild(interaction)
-    if (!dbGuild) throw new Error("Guild não encontrada no banco de dados");
+    const guildDb = await getGuild(interaction.guildId!);
+    if (!guildDb) throw new Error("Guild not found in database");
 
-    dbGuild.embedColor = valor
-    await dbGuild.save();
+    guildDb.embedColor = valor;
+    guildDb.save();
 
-    logger.database.info('color add to guild', 'guild')
+    const embed = await createEmbed(
+      interaction.guild!,
+      "Cor adicionada com sucesso!",
+      `Esta será a nova cor das embeds.\n\`#${valor}\``,
+      true
+    );
 
-    interaction.reply({
-      content: `Cor ${valor} adicionada com sucesso!`,
-      ephemeral: true,
-    })
-
+    await interaction.editReply({ content: "", embeds: [embed!] });
   } catch (error) {
-    logger.command.error("", error);
+    const msg = `Error executing ${interaction.commandName} command`;
+    const user = interaction.user
+    logger.error(msg, error, 3, __filename, interaction.guild!, user);
+
+    await interaction.editReply({
+      content: `Error executing ${interaction.commandName} command`,
+    });
   }
 }

@@ -1,38 +1,42 @@
 import { Client, IntentsBitField } from "discord.js";
-import { logger } from "./util/logger";
-import dotenv from 'dotenv'
+//import dotenv from 'dotenv';
+import { Logger } from "./classes/logger";
+import { connect } from "./connect";
+import { database } from "./database/database";
 import { registerEvents } from "./events/registerEvents";
-dotenv.config()
+//dotenv.config()
 
-logger.info("💫 SCRIPT INITIALIZATION")
+console.clear();
+console.log('✨ Started Server')
 
-// Cria objeto client
-const client: Client<boolean> = new Client({
-    intents: [
-        IntentsBitField.Flags.Guilds,
-        IntentsBitField.Flags.GuildMessages,
-        IntentsBitField.Flags.MessageContent,
-        IntentsBitField.Flags.GuildMembers,
-    ]
-})
+export const client = new Client({
+  intents: [
+    IntentsBitField.Flags.Guilds,
+    IntentsBitField.Flags.GuildMessages,
+    IntentsBitField.Flags.MessageContent,
+    IntentsBitField.Flags.GuildMembers,
+  ],
+});
 
-// Lida com os eventos
-registerEvents(client)
+export const logger = new Logger(client);
 
-// Inicializa o client
-client.login(process.env.TOKEN)
+async function main() {
+  // inicia database
+  await database();
 
-// Processos não tratados
+  // connecta ao discord server
+  await connect(process.env.TOKEN);
+
+  // Lida com os eventos
+  await registerEvents();
+}
+
+main();
+
 process.on("SIGINT", function () {
-    logger.error(`\x1b[32m%s\x1b[0m`, "\nAplicação desligada com CTRL+C")
-    process.exit(1);
+  process.exit(1);
 });
 
-process.on("uncaughtException", (error) => {
-    logger.error(`Erro não tratado`, error)
-});
+process.on("uncaughtException", (error) => {});
 
-process.on("unhandledRejection", (reason, promise) => {
-    logger.error(`Promessa rejeitada sem tratamento`, reason)
-});
-
+process.on("unhandledRejection", (reason, promise) => {});

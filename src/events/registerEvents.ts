@@ -1,17 +1,31 @@
-import { Client, Guild, Interaction, Message } from "discord.js";
-import { onGuildAvailable } from "./on-GuildAvailable/onGuildAvailable";
-import { onGuildCreate } from "./on-GuildCreate/onGuildCreate";
-import { onGuildDelete } from "./on-GuildDelete/onGuildDelete";
-import { onInteractionCreate } from "./on-InteractionCreate/onInteractionCreate";
-import { onMessageCreate } from "./on-MessageCreate/onMessageCreate";
-import { onReady } from "./on-ready/onReady";
+import { client } from "..";
+import { onChannelDelete } from "./onChannelDelete";
+import { onGuildAvailable } from "./onGuildAvailable";
+import { onInteractionCreate } from "./onInteractionCreate";
+import { onMessageCreate } from "./onMessageCreate";
+import { onMessageDelete } from "./onMessageDelete";
+import { onReady } from "./onReady";
 
-export function registerEvents(client: Client) {
-    client
-    .once('ready', onReady)
-    .on('guildAvailable', (guild: Guild) => onGuildAvailable(guild, client))
-    .on('guildCreate', (guild: Guild) => onGuildCreate(guild, client))
-    .on('interactionCreate', (interaction: Interaction) => onInteractionCreate(interaction, client))
-    .on('guildDelete', (guild: Guild) => onGuildDelete(guild, client))
-    .on('messageCreate', (message: Message) => onMessageCreate(message))
-} 
+export function registerEvents() {
+  client
+    .once("ready", onReady)
+    .on("channelCreate", () => {})
+    .on("channelDelete", onChannelDelete)
+    .on("channelUpdate", () => {})
+    .on("guildAvailable", onGuildAvailable)
+    .on("guildBanAdd", () => {})
+    .on("guildBanRemove", () => {})
+    .on("guildCreate", () => {})
+    .on("guildDelete", () => {})
+    .on("guildUpdate", () => {})
+    .on("guildMemberAdd", () => {})
+    .on("guildMemberRemove", () => {})
+    .on("guildMemberUpdate", () => {})
+    .on("interactionCreate", onInteractionCreate)
+    .on("messageCreate", onMessageCreate)
+    .on("messageDelete", onMessageDelete)
+    .on("messageUpdate", () => {})
+    .on("roleCreate", () => {})
+    .on("roleDelete", () => {})
+    .on("roleUpdate", () => {});
+}

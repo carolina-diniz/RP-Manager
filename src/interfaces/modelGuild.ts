@@ -1,14 +1,18 @@
 export interface IModelGuild {
-  name: string;
   guildId: string;
+  name: string;
   premium: boolean;
   prefix: string;
   embedColor?: string;
+  pdChannelId?: string;
+  recruitmentCategoryId?: string;
   pedirsetChannelId?: string;
   aprovarsetChannelId?: string;
-  recrutamentoCategory?: string;
-  entryRoleId?: string;
-  entryRoleRemove?: string;
-  salesReportChannelId?: string;
-  salesRoles?: { id: string; percent: number }[];
+  entryRoleId?: {id: string, name: string}[];
+  entryRoleRemoveId?: {id: string, name: string}[];
+  reportSalesId?: string;
+  reportSalesRolesId?: {id: string, percent: number}[];
+  reportChestId?: string;
+  reportButtonChestId?: string;
+  hierarquiaMessageId?: string;
 }

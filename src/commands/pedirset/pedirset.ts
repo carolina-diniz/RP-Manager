@@ -5,48 +5,47 @@ import {
   SlashCommandSubcommandBuilder,
   SlashCommandSubcommandGroupBuilder,
 } from "discord.js";
-import { logger } from "../../events/on-InteractionCreate/onInteractionCreate";
-import { criar } from "./criar/criarPedirset";
-import { entradaAdd } from "./entrada/entrada.add";
-import { entradaDel } from "./entrada/entrada.del";
-import { removerAdd } from "./remover/remover.add";
-import { removerDel } from "./remover/remover.del";
+import { logger } from "../..";
+import { verifyPermission } from "../../utils/verifyPermission";
+import { pedirsetCriar } from "./criar/pedirset-criar";
+import { pedirsetEntradaAdd } from "./entrada/pedirset-entrada-add";
+import { pedirsetEntradaDel } from "./entrada/pedirset-entrada-del";
+import { pedirsetRemoveAdd } from "./remover/pedirset-remover-add";
+import { pedirsetRemoveDel } from "./remover/pedirset-remover-del";
 
 export const data = new SlashCommandBuilder()
   .setName("pedirset")
-  .setDescription("Cria um canal para pedir sets de forma organizada.")
+  .setDescription("Cria a estrutura básica do sistema de pedidos")
   .addSubcommand(
-    new SlashCommandSubcommandBuilder()
-      .setName("criar")
-      .setDescription("Cria um novo canal para pedir sets.")
+    new SlashCommandSubcommandBuilder().setName("criar").setDescription("criar")
   )
   .addSubcommandGroup(
     new SlashCommandSubcommandGroupBuilder()
       .setName("entrada")
-      .setDescription("Grupo com opções para cargo de entrada.")
+      .setDescription("entrada")
       .addSubcommand(
         new SlashCommandSubcommandBuilder()
           .setName("add")
-          .setDescription("Adiciona cargo a lista de cargos adicionados ao aprovar set.")
+          .setDescription(
+            "Define um cargo a ser adicionado a um membro quando seu pedido de entrada for aprovado."
+          )
           .addRoleOption(
             new SlashCommandRoleOption()
               .setName("cargo")
-              .setDescription(
-                "Cargo para adicionar a lista de cargos ADICIONADOS ao aprovar set."
-              )
+              .setDescription("cargo")
               .setRequired(true)
           )
       )
       .addSubcommand(
         new SlashCommandSubcommandBuilder()
           .setName("del")
-          .setDescription("Remove cargo a lista de cargos adicionados ao aprovar set.")
+          .setDescription(
+            "Remove um cargo da lista de cargos a serem adicionados em pedidos de entrada aprovados."
+          )
           .addRoleOption(
             new SlashCommandRoleOption()
               .setName("cargo")
-              .setDescription(
-                "Cargo para remover da lista de cargos ADICIONADOS ao aprovar set."
-              )
+              .setDescription("cargo")
               .setRequired(true)
           )
       )
@@ -54,60 +53,69 @@ export const data = new SlashCommandBuilder()
   .addSubcommandGroup(
     new SlashCommandSubcommandGroupBuilder()
       .setName("remover")
-      .setDescription("Grupo com opções para cargo de entrada.")
+      .setDescription("remover")
       .addSubcommand(
         new SlashCommandSubcommandBuilder()
           .setName("add")
-          .setDescription("Adicionar cargo para ser REMOVIDOS ao aprovar set")
+          .setDescription(
+            "Define um cargo a ser removido de um membro quando seu pedido de entrada for aprovado."
+          )
           .addRoleOption(
             new SlashCommandRoleOption()
               .setName("cargo")
-              .setDescription(
-                "Cargo para adicionar a lista de cargos REMOVIDOS ao aprovar set."
-              )
+              .setDescription("cargo")
               .setRequired(true)
           )
       )
       .addSubcommand(
         new SlashCommandSubcommandBuilder()
           .setName("del")
-          .setDescription("Remove cargo a lista de cargos REMOVIDOS ao aprovar set.")
+          .setDescription(
+            "Remove um cargo da lista de cargos a serem removidos em pedidos de entrada aprovados."
+          )
           .addRoleOption(
             new SlashCommandRoleOption()
               .setName("cargo")
-              .setDescription(
-                "Cargo para remover da lista de cargos REMOVIDOS ao aprovar set."
-              )
+              .setDescription("cargo")
               .setRequired(true)
           )
       )
   );
 
 export async function execute(interaction: CommandInteraction) {
-  logger.setPath(__filename);
   try {
-    const interactionData = interaction.options.data[0];
-    console.log(interactionData);
+    await interaction.deferReply({ ephemeral: true });
 
-    if (interactionData.name === "criar") await criar(interaction);
+    if (!(await verifyPermission(interaction, "Administrator"))) return null;
+
+    const interactionData = interaction.options.data[0];
+
+    if (interactionData.name === "criar") await pedirsetCriar(interaction);
 
     if (interactionData.name === "entrada") {
       if (interactionData.options![0].name === "add") {
-        await entradaAdd(interaction);
+        await pedirsetEntradaAdd(interaction);
       }
       if (interactionData.options![0].name === "del") {
-        await entradaDel(interaction);
+        await pedirsetEntradaDel(interaction);
       }
     }
+
     if (interactionData.name === "remover") {
       if (interactionData.options![0].name === "add") {
-        await removerAdd(interaction);
+        await pedirsetRemoveAdd(interaction);
       }
       if (interactionData.options![0].name === "del") {
-        await removerDel(interaction);
+        await pedirsetRemoveDel(interaction);
       }
     }
   } catch (error) {
-    logger.command.error("", error);
+    const msg = `Error executing ${interaction.commandName} command`;
+    const user = interaction.user
+    logger.error(msg, error, 3, __filename, interaction.guild!, user);
+
+    await interaction.editReply({
+      content: `Error executing ${interaction.commandName} command`,
+    });
   }
 }

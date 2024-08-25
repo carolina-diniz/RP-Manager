@@ -131,3 +131,4 @@ dist
 
 # Other files
 kawo_rpmanager.service
+src/commands/premium/premium.MD

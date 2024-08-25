@@ -2,6 +2,10 @@ export interface IModelGuild {
   guildId: string;
   name: string;
   premium: boolean;
+  payment: {
+    lastPayment: string | null;
+    expiration: string | null;
+  };
   prefix: string;
   embedColor?: string;
   pdChannelId?: string;

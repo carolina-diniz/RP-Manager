@@ -43,7 +43,7 @@ export function relatorioVendaMessage(message: Message): Promise<void> {
             return;
           }
 
-          if (parceria && (parceria.includes('p'))) {
+          if (parceria && parceria.includes("p")) {
             isPartnership = true;
           }
 
@@ -110,20 +110,19 @@ export function relatorioVendaMessage(message: Message): Promise<void> {
       }
 
       // envia mensagem
-
-      const isPremium = await ModelGuild.findOne({ guildId: message.guildId })
-       .then((guild) => { if (guild) return guild.premium })
+      const guildDb = await ModelGuild.findOne({ guildId: message.guildId });
+      const isPremium = guildDb?.premium;
 
       const noPremiumEmbed = await createEmbed(
         message.guild!,
-        "No Premium Access!",
-        "Parece que seu premium acabou :'c, para continuar com os benefícios, entre em contato com @kaworii21."
-      )
+        "Sem acesso Premium!",
+        "Parece que sua assinatura Premium expirou. 😢 Para continuar desfrutando dos benefícios, utilize o comando `/premium`."
+      );
 
       message.channel
         .send({
           content: `||<@${message.author.id}>||`,
-          embeds: isPremium ? [embed]:[embed, noPremiumEmbed] ,
+          embeds: isPremium ? [embed] : [embed, noPremiumEmbed],
         })
         .then(async (messageSent) => {
           if (!items) return;
@@ -155,8 +154,8 @@ function createSaleInDatase(
 ): Promise<void> {
   return new Promise(async (resolve, reject) => {
     try {
-      const dateUTC = new Date()
-      const dateBRL = new Date(dateUTC.getTime() + (-180 * 60000))
+      const dateUTC = new Date();
+      const dateBRL = new Date(dateUTC.getTime() + -180 * 60000);
 
       const salesDb = new ModelSales({
         guildId: messageSent.guildId,
@@ -170,7 +169,7 @@ function createSaleInDatase(
         createAt: dateBRL.getTime(),
       });
 
-      salesDb.save()
+      salesDb.save();
       logger.info("New sale successfully created");
       resolve();
     } catch (error) {

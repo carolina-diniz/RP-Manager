@@ -1,6 +1,7 @@
 import { client } from "..";
 import { onChannelDelete } from "./onChannelDelete";
 import { onGuildAvailable } from "./onGuildAvailable";
+import { onGuildCreate } from "./onGuildCreate";
 import { onInteractionCreate } from "./onInteractionCreate";
 import { onMessageCreate } from "./onMessageCreate";
 import { onMessageDelete } from "./onMessageDelete";
@@ -15,7 +16,7 @@ export function registerEvents() {
     .on("guildAvailable", onGuildAvailable)
     .on("guildBanAdd", () => {})
     .on("guildBanRemove", () => {})
-    .on("guildCreate", () => {})
+    .on("guildCreate", onGuildCreate)
     .on("guildDelete", () => {})
     .on("guildUpdate", () => {})
     .on("guildMemberAdd", () => {})

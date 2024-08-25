@@ -4,7 +4,7 @@ import { deployCommands } from "../deployCommands";
 import { ModelGuild } from "../models/modelGuild";
 import { getGuild } from "../utils/getGuild";
 
-export async function onGuildAvailable(guild: Guild) {
+export async function onGuildCreate(guild: Guild) {
   try {
     const guildDb = await getGuild(guild.id);
     if (!guildDb) await createGuildDb(guild);

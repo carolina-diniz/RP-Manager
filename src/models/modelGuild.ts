@@ -15,6 +15,12 @@ const guildShema: Schema<IModelGuild> = new Schema({
     type: Boolean,
     default: false,
   },
+  payment: {
+    type: {
+      lastPayment: String,
+      expiration: String,
+    },
+  },
   prefix: { type: String, default: "[N]" },
   embedColor: { type: String },
   pdChannelId: { type: String },

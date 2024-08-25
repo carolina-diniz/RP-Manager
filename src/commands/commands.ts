@@ -4,6 +4,7 @@ import * as getall from "./get-all/getall";
 import * as hierarquia from "./hierarquia/hierarquia";
 import * as pd from "./pd/pd";
 import * as pedirset from "./pedirset/pedirset";
+import * as premium from "./premium/premium";
 import * as relatorios from "./relatorios/relatorios";
 import * as ticket from "./ticket/ticket";
 import * as top10 from "./top10/top10";
@@ -20,4 +21,5 @@ export const commands = {
   clear,
   getall,
   hierarquia,
+  premium,
 };

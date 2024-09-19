@@ -1,9 +1,10 @@
+import "dotenv/config";
 import { client, logger } from ".";
 
-export function connect(token?: string): Promise<void> {
+export function connect(): Promise<void> {
   return new Promise((resolve, reject) => {
     try {
-      client.login(token);
+      client.login(process.env.TOKEN);
       logger.info("login successful", 5);
       resolve();
     } catch (error) {

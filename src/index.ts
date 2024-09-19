@@ -1,10 +1,8 @@
 import { Client, IntentsBitField } from "discord.js";
-//import dotenv from 'dotenv';
 import { Logger } from "./classes/logger";
 import { connect } from "./connect";
 import { database } from "./database/database";
 import { registerEvents } from "./events/registerEvents";
-//dotenv.config()
 
 console.clear();
 console.log('✨ Started Server')
@@ -25,7 +23,7 @@ async function main() {
   await database();
 
   // connecta ao discord server
-  await connect(process.env.TOKEN);
+  await connect();
 
   // Lida com os eventos
   await registerEvents();

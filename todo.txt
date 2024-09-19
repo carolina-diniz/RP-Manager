@@ -1,2 +1,2 @@
-relatorio bau
-top10
+mudanças:
+movida a importação do token do discord para dentro do arquivo de conexão.

@@ -60,7 +60,7 @@ export async function execute(interaction: CommandInteraction) {
     await interaction.editReply({ content: "", embeds: [embed!] });
   } catch (error) {
     const msg = `Error executing ${interaction.commandName} command`;
-    const user = interaction.user
+    const user = interaction.user;
     logger.error(msg, error, 3, __filename, interaction.guild!, user);
 
     await interaction.editReply({

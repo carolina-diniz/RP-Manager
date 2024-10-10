@@ -7,7 +7,7 @@ import { getGuild } from "../../utils/getGuild";
 import { municao } from "./table";
 
 export function relatorioVendaMessage(message: Message): Promise<void> {
-  logger.init(__filename);
+  logger.init({filePath: __filename});
   return new Promise(async (resolve, reject) => {
     try {
       if (!(await isContentValid(message))) return;

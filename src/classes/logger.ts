@@ -26,23 +26,18 @@ export class Logger {
     return `Root:\\\\${path.split("src\\")[1]}`;
   }
 
-  async init(filePath: string, root?: rootLevelNumber, guild?: Guild) {
+  async init({ filePath }: { filePath: string }) {
     const path = this.convertPath(filePath);
     const level: LogLevel = "INIT";
     const time = this.date.getTime().formattedTime;
 
-    let message = "";
-    message += `[${this.color.msg(level, "verde")}] `;
-    message += `${this.color.msg(time, "cinza claro")} `;
-    message += `[${this.root[root ?? 1]}] `;
-    message += guild ? `[${guild.name}] ` : "";
-    message += path;
+    let message =
+      `[${this.color.msg(level, "verde")}] ` +
+      `${this.color.msg(time, "cinza claro")} ` +
+      path;
 
     console.log(message);
   }
-
-
-
 
   async info(msg: string, root?: rootLevelNumber, guild?: Guild) {
     const level: LogLevel = "INFO";
@@ -56,8 +51,6 @@ export class Logger {
 
     console.log(message);
   }
-
-
 
   async error(
     msg: string,
@@ -119,9 +112,6 @@ export class Logger {
       console.log(error);
     }
   }
-
-
-  
 
   async warn(
     msg: string,

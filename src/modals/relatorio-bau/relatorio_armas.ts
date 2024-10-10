@@ -11,7 +11,7 @@ import { createEmbed } from "../../utils/createEmbed";
 import { getGuild } from "../../utils/getGuild";
 
 export async function execute(interaction: ModalSubmitInteraction) {
-  logger.init(__filename);
+  logger.init({filePath: __filename});
   try {
     // carrega dados do cache
     const selectedWeapon = cache[interaction.user.id].relatorio_bau.selectedWeapon;

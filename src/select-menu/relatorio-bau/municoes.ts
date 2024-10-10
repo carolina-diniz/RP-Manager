@@ -14,7 +14,7 @@ import { cache } from "../../cache/interaction";
 import { gunNames } from "../../json/gunsNames";
 
 export async function execute(interaction: StringSelectMenuInteraction) {
-  logger.init(__filename);
+  logger.init({filePath: __filename});
   try {
     const modal = new ModalBuilder()
       .setCustomId("relatorio_municoes")

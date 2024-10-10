@@ -10,7 +10,7 @@ import { createEmbed } from "../../utils/createEmbed";
 import { getGuild } from "../../utils/getGuild";
 
 export async function execute(interaction: ButtonInteraction) {
-  logger.init(__filename);
+  logger.init({filePath: __filename});
   try {
     await verifyEntryRole(interaction);
 

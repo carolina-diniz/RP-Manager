@@ -14,7 +14,7 @@ export const data = new SlashCommandBuilder()
   .setDescription("premium");
 
 export async function execute(interaction: CommandInteraction) {
-  logger.init(__filename, 5, interaction.guild!);
+  logger.init({filePath: __filename});
   try {
     await interaction.deferReply();
 

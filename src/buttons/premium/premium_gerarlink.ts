@@ -10,7 +10,7 @@ import { cache } from "../../cache/interaction";
 import { PaymentMercadoPago } from "../../classes/payment";
 
 export async function execute(interaction: ButtonInteraction) {
-  logger.init(__filename, 5, interaction.guild!);
+  logger.init({filePath: __filename});
   try {
     const price = parseFloat(process.env.premiumPrice!);
     const payment = new PaymentMercadoPago(process.env.accessToken!);

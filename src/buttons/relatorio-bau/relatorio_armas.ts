@@ -4,7 +4,7 @@ import { cache } from "../../cache/interaction";
 import { createEmbed } from "../../utils/createEmbed";
 
 export async function execute(interaction: ButtonInteraction) {
-  logger.init(__filename);
+  logger.init({filePath: __filename});
   try {
     await interaction.deferReply({ ephemeral: true });
 

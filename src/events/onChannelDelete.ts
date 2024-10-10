@@ -3,7 +3,7 @@ import { logger } from "..";
 import { getGuild } from "../utils/getGuild";
 
 export async function onChannelDelete(channel: DMChannel | NonThreadGuildBasedChannel) {
-  logger.init(__filename, 5);
+  logger.init({filePath: __filename});
   if (
     !channel.isTextBased() ||
     channel.isDMBased() ||

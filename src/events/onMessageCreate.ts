@@ -7,7 +7,7 @@ export async function onMessageCreate(message: Message) {
   if (message.channelId === "1275590381337051136") return;
   try {
     if (message.author.bot) return;
-    logger.init(__filename, 6, message.guild!)
+    logger.init({filePath: __filename})
 
     //await verifyLinks(message)
 

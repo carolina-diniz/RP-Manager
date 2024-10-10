@@ -9,15 +9,16 @@ export const data = new SlashCommandBuilder()
   );
 
 export async function execute(interaction: CommandInteraction) {
-  logger.init(__filename, 3, interaction.guild!)
+  logger.init({filePath: __filename})
   try {
     await interaction.deferReply({ ephemeral: true });
 
-    const uptime = process.uptime();
-    const title = client.user!.username;
-    let description = "**Status**: ` Online ✅ `\n";
-    description += `**Uptime:** <t:${Math.floor(Date.now() / 1000 - uptime)}:R>`;
-    const embed = await createEmbed(interaction.guild!, title, description);
+    const UPTIME = process.uptime();
+    const TITLE = client.user?.username;
+    const DESCRIPTION = "**Status**: ` Online ✅ `\n" + 
+    `**Uptime:** <t:${Math.floor(Date.now() / 1000 - UPTIME)}:R>`;
+    
+    const embed = await createEmbed(interaction.guild!, TITLE, DESCRIPTION);
 
     await interaction.editReply({ content: "", embeds: [embed!] });
     logger.info(`command ${interaction.commandName} replyed successfully`, 3, interaction.guild!);

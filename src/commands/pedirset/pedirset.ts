@@ -1,121 +1,100 @@
 import {
+  ActionRowBuilder,
+  ButtonBuilder,
+  ButtonInteraction,
+  ButtonStyle,
   CommandInteraction,
+  EmbedBuilder,
   SlashCommandBuilder,
-  SlashCommandRoleOption,
-  SlashCommandSubcommandBuilder,
-  SlashCommandSubcommandGroupBuilder,
 } from "discord.js";
 import { logger } from "../..";
+import { getGuild } from "../../utils/getGuild";
 import { verifyPermission } from "../../utils/verifyPermission";
-import { pedirsetCriar } from "./criar/pedirset-criar";
-import { pedirsetEntradaAdd } from "./entrada/pedirset-entrada-add";
-import { pedirsetEntradaDel } from "./entrada/pedirset-entrada-del";
-import { pedirsetRemoveAdd } from "./remover/pedirset-remover-add";
-import { pedirsetRemoveDel } from "./remover/pedirset-remover-del";
 
 export const data = new SlashCommandBuilder()
   .setName("pedirset")
-  .setDescription("Cria a estrutura básica do sistema de pedidos")
-  .addSubcommand(
-    new SlashCommandSubcommandBuilder().setName("criar").setDescription("criar")
-  )
-  .addSubcommandGroup(
-    new SlashCommandSubcommandGroupBuilder()
-      .setName("entrada")
-      .setDescription("entrada")
-      .addSubcommand(
-        new SlashCommandSubcommandBuilder()
-          .setName("add")
-          .setDescription(
-            "Define um cargo a ser adicionado a um membro quando seu pedido de entrada for aprovado."
-          )
-          .addRoleOption(
-            new SlashCommandRoleOption()
-              .setName("cargo")
-              .setDescription("cargo")
-              .setRequired(true)
-          )
-      )
-      .addSubcommand(
-        new SlashCommandSubcommandBuilder()
-          .setName("del")
-          .setDescription(
-            "Remove um cargo da lista de cargos a serem adicionados em pedidos de entrada aprovados."
-          )
-          .addRoleOption(
-            new SlashCommandRoleOption()
-              .setName("cargo")
-              .setDescription("cargo")
-              .setRequired(true)
-          )
-      )
-  )
-  .addSubcommandGroup(
-    new SlashCommandSubcommandGroupBuilder()
-      .setName("remover")
-      .setDescription("remover")
-      .addSubcommand(
-        new SlashCommandSubcommandBuilder()
-          .setName("add")
-          .setDescription(
-            "Define um cargo a ser removido de um membro quando seu pedido de entrada for aprovado."
-          )
-          .addRoleOption(
-            new SlashCommandRoleOption()
-              .setName("cargo")
-              .setDescription("cargo")
-              .setRequired(true)
-          )
-      )
-      .addSubcommand(
-        new SlashCommandSubcommandBuilder()
-          .setName("del")
-          .setDescription(
-            "Remove um cargo da lista de cargos a serem removidos em pedidos de entrada aprovados."
-          )
-          .addRoleOption(
-            new SlashCommandRoleOption()
-              .setName("cargo")
-              .setDescription("cargo")
-              .setRequired(true)
-          )
-      )
-  );
+  .setDescription("Abre configurações de pedido de set.");
 
 export async function execute(interaction: CommandInteraction) {
   try {
-    await interaction.deferReply({ ephemeral: true });
+    logger.init({ filePath: __filename });
+    await interaction.deferReply();
 
-    if (!(await verifyPermission(interaction, "Administrator"))) return null;
+    // Verify permission
+    const hasPermission = await verifyPermission(interaction, "Administrator");
+    if (!hasPermission) throw new Error("Sem permissão");
 
-    const interactionData = interaction.options.data[0];
+    // Create buttons
+    const buttons = await createButtonsHome();
 
-    if (interactionData.name === "criar") await pedirsetCriar(interaction);
+    const embed = await createEmbedHome(interaction);
 
-    if (interactionData.name === "entrada") {
-      if (interactionData.options![0].name === "add") {
-        await pedirsetEntradaAdd(interaction);
-      }
-      if (interactionData.options![0].name === "del") {
-        await pedirsetEntradaDel(interaction);
-      }
-    }
-
-    if (interactionData.name === "remover") {
-      if (interactionData.options![0].name === "add") {
-        await pedirsetRemoveAdd(interaction);
-      }
-      if (interactionData.options![0].name === "del") {
-        await pedirsetRemoveDel(interaction);
-      }
-    }
-  } catch (error) {
-    const msg = `Error executing ${interaction.commandName} command`;
-    const user = interaction.user
-    logger.error(msg, error, 3, __filename, interaction.guild!, user);
-
+    // Send message
     await interaction.editReply({
-      content: `Error executing ${interaction.commandName} command`,
+      content: '',
+      embeds: [embed],
+      components: [buttons],
+    });
+  } catch (error) {
+    logger.error("Error executing command", error, 5, __filename);
+    await interaction.editReply({
+      content: "Ocorreu um erro ao executar o comando.",
     });
   }
+}
+
+export async function createButtonsHome() {
+  const button_01 = new ButtonBuilder()
+    .setCustomId("pedirset_create_channels")
+    .setLabel("➕ Criar canais")
+    .setStyle(ButtonStyle.Secondary);
+
+  const button_02 = new ButtonBuilder()
+    .setCustomId("pedirset_edit_channels")
+    .setLabel("✍️ Editar canais")
+    .setStyle(ButtonStyle.Secondary);
+
+  const button_03 = new ButtonBuilder()
+    .setCustomId("pedirset_roles")
+    .setLabel("🛂 Cargos")
+    .setStyle(ButtonStyle.Secondary);
+
+  const button_04 = new ButtonBuilder()
+    .setCustomId("pedirset_close")
+    .setLabel("❌ Fechar")
+    .setStyle(ButtonStyle.Danger);
+
+  const row = new ActionRowBuilder<ButtonBuilder>().addComponents(
+    button_01,
+    button_02,
+    button_03,
+    button_04
+  );
+
+  return row;
+}
+
+export async function createEmbedHome(
+  interaction: CommandInteraction | ButtonInteraction
+) {
+  const guildDb = await getGuild(interaction.guildId!);
+  const pedirsetID = guildDb?.pedirsetChannelId;
+  const aprovarsetID = guildDb?.aprovarsetChannelId;
+  const pedirsetRoleID = guildDb?.entryRoleId;
+
+  const INTERACTION_PEDIRSET_TITLE = "Configurações de Pedido de Set";
+  const INTERACTION_PEDIRSET_DESCRIPTION =
+    "**CANAIS:**\n" +
+    `Pedir set: <#${pedirsetID ?? "Não definido"}>\n` +
+    `Aprovar set: <#${aprovarsetID ?? "Não definido"}>\n` +
+    "\n**CARGOS:**\n" +
+    `Entrada: <@&${pedirsetRoleID?.map((role) => role.id)[0] ?? "Não definido"}>\n` +
+    "Aprovar: Em breve";
+
+  // Create embed
+  const embed = new EmbedBuilder()
+    .setTitle(INTERACTION_PEDIRSET_TITLE)
+    .setDescription(INTERACTION_PEDIRSET_DESCRIPTION);
+
+  return embed;
 }

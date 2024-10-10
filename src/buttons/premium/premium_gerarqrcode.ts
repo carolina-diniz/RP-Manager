@@ -7,7 +7,7 @@ import { PaymentMercadoPago } from "../../classes/payment";
 import { createEmbed } from "../../utils/createEmbed";
 
 export async function execute(interaction: ButtonInteraction) {
-  logger.init(__filename, 5, interaction.guild!);
+  logger.init({filePath: __filename});
   try {
     const embed = new EmbedBuilder(interaction.message.embeds[0]!.data);
 

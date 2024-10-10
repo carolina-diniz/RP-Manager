@@ -4,7 +4,7 @@ import { ModelSales } from "../models/modelSales";
 import { getGuild } from "../utils/getGuild";
 
 export async function onMessageDelete(message: Message | PartialMessage) {
-  logger.init(__filename, 6, message.guild!);
+  logger.init({filePath: __filename});
   try {
     if (!message) return;
 

@@ -12,7 +12,7 @@ import {
 } from "./relatorio_textInputBuilder";
 
 export async function execute(interaction: ButtonInteraction) {
-  logger.init(__filename);
+  logger.init({filePath: __filename});
   try {
     const modal = new ModalBuilder()
       .setCustomId("relatorio_coletes")

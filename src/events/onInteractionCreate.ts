@@ -2,7 +2,6 @@ import { Interaction } from "discord.js";
 import { buttons } from "../buttons/buttons";
 import { commands } from "../commands/commands";
 import { modalSubmit } from "../modals/modalSubmit";
-import { stringSelectMenu } from "../select-menu/stringSelectMenu";
 
 export async function onInteractionCreate(interaction: Interaction) {
   if (interaction.isCommand()) {
@@ -21,6 +20,7 @@ export async function onInteractionCreate(interaction: Interaction) {
     }
   }
 
+  /*
   if (interaction.isStringSelectMenu()) {
     const { customId } = interaction;
 
@@ -28,7 +28,7 @@ export async function onInteractionCreate(interaction: Interaction) {
       await stringSelectMenu[customId as keyof typeof stringSelectMenu].execute(interaction
       );
     }
-  }
+  }*/
 
   // Modals
   if (interaction.isModalSubmit()) {

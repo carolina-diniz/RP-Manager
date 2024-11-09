@@ -10,10 +10,11 @@ export async function execute(interaction: CommandInteraction) {
   const comandList = [
     "`/color` - Muda a cor das embeds. (premium)",
     "`/comandos` - Mostra a lista de comandos.",
-    "`/pd` - Bane usuário do servidor. (premium)",
-    "`/pedirset` - Formulário de entrada no servidor.",
+    "`/pd` - Bane usuário do servidor.",
+    "`/pedirset` - Configura entrada no servidor.",
     "`/uptime` - Mostra o tempo de atividade do bot.",
     "`/premium` - Mostra informações sobre o premium.",
+    "`/farm` - Configuração de farm.",
   ];
 
   // Envia a lista de comandos disponíveis

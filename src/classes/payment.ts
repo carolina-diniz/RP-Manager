@@ -1,11 +1,11 @@
 import MercadoPagoConfig, { Payment } from "mercadopago";
 import { PaymentResponse } from "mercadopago/dist/clients/payment/commonTypes";
 import { PaymentCreateRequest } from "mercadopago/dist/clients/payment/create/types";
-import { client } from "..";
 import { cache } from "../cache/interaction";
-import { PaymentBody } from "../interfaces/paymentBody";
+import { PaymentBody } from "../core/interfaces/paymentBody";
 import { createEmbed } from "../utils/createEmbed";
-import { getGuild } from "../utils/getGuild";
+import { client } from "../connections/discord.connection";
+import { database } from "../core/services/database/database.service";
 
 export class PaymentMercadoPago {
   private payment?: Payment;
@@ -126,7 +126,7 @@ Agora você tem acesso total aos recursos do RP Manager para o seu servidor de G
 
       const embed = await createEmbed(guild, title, description, footer, thumbnail, true);
 
-      const guildDb = await getGuild(guild.id);
+      const guildDb = await database.getGuild(guild.id);
       if (!guildDb) throw new Error("Guild not found");
 
       const dateNow = new Date();

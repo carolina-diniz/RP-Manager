@@ -1,6 +1,6 @@
 import { EmbedBuilder, EmbedFooterOptions, Guild } from "discord.js";
 import { logger } from "..";
-import { getGuild } from "./getGuild";
+import { database } from "../core/services/database/database.service";
 
 export function createEmbed(  
   guild: Guild,
@@ -13,7 +13,7 @@ export function createEmbed(
 ): Promise<EmbedBuilder> {
   return new Promise(async (resolve, reject) => {
     try {
-      const guildDb = await getGuild(guild.id);
+      const guildDb = await database.getGuild(guild.id);
       if (!guildDb) return null;
 
       const embed = new EmbedBuilder();
